@@ -4,6 +4,30 @@
 
 Este repositório contém uma configuração completa de **Odoo 17 LTS** com localização brasileira (l10n_br) rodando em **Docker Containers** com **rede macvlan-dhcp** para IP real na sua infraestrutura.
 
+---
+
+## 🏢 Projeto Idealizado para Homelab
+
+### Hardware Utilizado
+
+```
+🖥️  IBM LENOVO X3650 M5 5462AC1
+├── CPU:    24x Intel(R) Xeon(R) CPU E5-2670 v3 @ 2.30GHz (1x Socket)
+├── RAM:    64GB DDR4 2133 MHz (4x16GB Samsung SF4722G4CKHH6DFSDS)
+├── RAID:   ServeRAID M1215 em RAID10 (5 drives com ~638GB)
+├── Virtualizado: PROXMOX v8.4
+└── Rede:   MIKROTIK X64 BRIDGE + VLAN
+```
+
+**Capacidades Verificadas:**
+- ✅ 24 CPU cores / 64GB RAM suficiente para Odoo 17 + 10+ containers
+- ✅ RAID10 garante durabilidade com redundância 2x
+- ✅ PROXMOX com LVM oferece snapshots e backup automatizado
+- ✅ Rede VLAN-aware com segmentação entre containers
+- ✅ Performance estável para produção em pequeno/médio volume
+
+---
+
 ### Stack Tecnológico
 
 - **Odoo 17.0 LTS** (suporte até 2026)
