@@ -14,9 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     liblcms2-dev \
     libtiff-dev \
     libharfbuzz0b \
-    libwebp6 \
-    tcl8.6 \
-    tk8.6 \
+    libwebp7 \
     git \
     wkhtmltopdf \
     xfonts-75dpi \
