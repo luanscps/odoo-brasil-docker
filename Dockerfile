@@ -38,9 +38,10 @@ RUN pip install --upgrade pip setuptools wheel && \
 # Copiar configuração padrão
 COPY ./odoo.conf /etc/odoo/odoo.conf
 
-# Criar diretórios necessários
+# Criar diretórios necessários e dar permissões
 RUN mkdir -p /mnt/extra-addons /etc/odoo /var/lib/odoo && \
-    chown -R odoo:odoo /mnt/extra-addons /etc/odoo /var/lib/odoo
+    chown -R odoo:odoo /mnt/extra-addons /etc/odoo /var/lib/odoo && \
+    chmod -R 755 /mnt/extra-addons
 
 USER odoo
 
