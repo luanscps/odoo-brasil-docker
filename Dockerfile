@@ -33,7 +33,6 @@ RUN pip install --upgrade pip setuptools wheel && \
     lxml \
     pillow \
     num2words \
-    pycpf \
     && rm -rf ~/.cache/pip/*
 
 # Copiar configuração padrão
