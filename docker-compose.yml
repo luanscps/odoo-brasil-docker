@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: odoo-db
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-odoo_secure_password}
+      POSTGRES_DB: odoo_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /DATA/AppData/odoo/postgres:/var/lib/postgresql/data
+    networks:
+      macvlan_net:
+        ipv4_address: 10.41.10.148
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  odoo:
+    image: odoo:17.0
+    container_name: odoo-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      HOST: postgres
+      USER: odoo
+      PASSWORD: ${DB_PASSWORD:-odoo_secure_password}
+      DB_NAME: odoo_db
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+    volumes:
+      - /DATA/AppData/odoo/addons:/mnt/extra-addons
+      - /DATA/AppData/odoo/config:/etc/odoo
+      - /DATA/AppData/odoo/data:/var/lib/odoo
+    networks:
+      macvlan_net:
+        ipv4_address: 10.41.10.147
+    restart: unless-stopped
+    command: >
+      odoo
+      --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons
+      --db-filter=^odoo_db$
+      --database=odoo_db
+      -c /etc/odoo/odoo.conf
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8069/web/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  macvlan_net:
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+      macvlan_mode: bridge
+    ipam:
+      config:
+        - subnet: 10.41.10.0/24
+          gateway: 10.41.10.1
+          ip_range: 10.41.10.128/25
+
+volumes:
+  postgres_data:
+    driver: local
+  odoo_data:
+    driver: local
