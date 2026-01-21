@@ -48,5 +48,3 @@ USER odoo
 WORKDIR /home/odoo
 
 EXPOSE 8069 8072
-
-CMD ["odoo", "--addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons"]
