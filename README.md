@@ -57,8 +57,8 @@ Sua VM (Portainer)
 │   ├── Caddy: 10.41.10.128
 │   ├── Adminer: 10.41.10.129
 │   ├── MariaDB: 10.41.10.131
-│   ├── PostgreSQL (Odoo DB): 10.41.10.148 ← NOVO
-│   └── Odoo 17: 10.41.10.147 ← NOVO
+│   ├── PostgreSQL (Odoo DB): 10.41.10.150 ← NOVO
+│   └── Odoo 17: 10.41.10.149 ← NOVO
 │
 └── /DATA/AppData/odoo/
     ├── postgres/     (dados do banco)
@@ -108,8 +108,8 @@ nano .env
 ```env
 DB_PASSWORD=SuaSenhaSegura123!    # Mude para senha forte
 ADMIN_PASSWORD=AdminSeguro123!     # Senha do admin Odoo
-ODOO_IP=10.41.10.147               # IP da rede macvlan
-DB_IP=10.41.10.148                 # IP do banco (PostgreSQL)
+ODOO_IP=10.41.10.149               # IP da rede macvlan
+DB_IP=10.41.10.150                 # IP do banco (PostgreSQL)
 ```
 
 ### 3️⃣ Executar Script de Inicialização
@@ -158,7 +158,7 @@ Este script vai:
 
 ### URL de Acesso
 
-- **Dentro da rede (recomendado)**: `http://10.41.10.147:8069`
+- **Dentro da rede (recomendado)**: `http://10.41.10.149:8069`
 - **Credenciais padrão**:
   - Usuário: `admin`
   - Senha: `admin` (MUDE APÓS PRIMEIRO LOGIN!)
@@ -307,7 +307,7 @@ Já tem Caddy rodando em `10.41.10.128`? Configure um vhost:
 
 ```caddyfile
 odoo.seu-dominio.com.br {
-    reverse_proxy 10.41.10.147:8069 {
+    reverse_proxy 10.41.10.149:8069 {
         header_up X-Forwarded-For {http.request.remote}
         header_up X-Forwarded-Proto {http.request.proto}
         header_up X-Forwarded-Host {http.request.host}
@@ -395,17 +395,15 @@ docker exec -it odoo-app odoo -d odoo_db -u base --stop-after-init
 # Settings > Apps > Update App List
 ```
 
-### Erro de IP macvlan
+### Erro de IP macvlan-dhcp
 
 ```bash
-# Verificar configuração macvlan
+# Verificar configuração macvlan-dhcp
 docker network ls
 docker network inspect macvlan-dhcp
 
-# Se precisar recriar (CUIDADO!):
-docker network rm macvlan-dhcp
-docker-compose down
-docker-compose up -d
+# Verificar IPs atribuídos
+docker inspect odoo-app | grep -i ipv4
 ```
 
 ---
@@ -433,6 +431,7 @@ docker-compose up -d
 - ✅ Docker Compose com PostgreSQL 15
 - ✅ Scripts de instalação e backup
 - ✅ Documentação completa em PT-BR
+- ✅ IPs configurados: Odoo (10.41.10.149), PostgreSQL (10.41.10.150)
 
 ---
 
