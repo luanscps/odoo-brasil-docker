@@ -5,18 +5,17 @@ services:
     image: postgres:15-alpine
     container_name: odoo-db
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: odoo
       POSTGRES_PASSWORD: ${DB_PASSWORD:-odoo_secure_password}
       POSTGRES_DB: postgres
     volumes:
       - /DATA/AppData/odoo/postgres:/var/lib/postgresql/data
-      - /DATA/AppData/odoo/config/init-db.sh:/docker-entrypoint-initdb.d/init.sh
     networks:
       macvlan-dhcp:
         ipv4_address: 10.41.10.150
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -31,27 +30,19 @@ services:
       HOST: postgres
       USER: odoo
       PASSWORD: ${DB_PASSWORD:-odoo_secure_password}
-      DB_NAME: odoo_db
     volumes:
-      - /DATA/AppData/odoo/addons:/mnt/extra-addons
-      - /DATA/AppData/odoo/config/odoo.conf:/etc/odoo/odoo.conf
+      - /DATA/AppData/odoo/addons:/mnt/extra-addons:rw
       - /DATA/AppData/odoo/data:/var/lib/odoo
     networks:
       macvlan-dhcp:
         ipv4_address: 10.41.10.149
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8069/web/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+    stdin_open: true
+    tty: true
 
 networks:
   macvlan-dhcp:
     external: true
-
-volumes:
-  postgres_data:
-    driver: local
-  odoo_data:
-    driver: local
