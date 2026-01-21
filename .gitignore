@@ -1,0 +1,47 @@
+# Environment variables (NUNCA commitar senhas!)
+.env
+!.env.example
+
+# Arquivos de cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Diretórios de dados (volumes)
+/DATA/
+odoo/postgres/
+odoo/addons/
+odoo/data/
+odoo/logs/
+
+# Backups
+*.sql
+*.sql.gz
+*.tar.gz
+*.zip
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+.dockerignore
+Dockerfile.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+odoo.log
+
+# Arquivos temporários
+.tmp/
+*.tmp
