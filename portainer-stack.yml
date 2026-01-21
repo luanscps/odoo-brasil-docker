@@ -63,15 +63,7 @@ services:
 
 networks:
   macvlan-dhcp:
-    driver: macvlan
-    driver_opts:
-      parent: eth0
-      macvlan_mode: bridge
-    ipam:
-      config:
-        - subnet: 10.41.10.0/24
-          gateway: 10.41.10.1
-          ip_range: 10.41.10.128/25
+    external: true
 
 volumes:
   postgres_data:
