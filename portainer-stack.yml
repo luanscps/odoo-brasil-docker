@@ -1,0 +1,112 @@
+# Arquivo para deploy direto no Portainer
+# Copie TODO o conteúdo para: Environment > Stacks > Add Stack > Editor
+
+version: '3.9'
+
+services:
+  # Banco de dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: odoo-db
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: seu_senha_segura_aqui
+      POSTGRES_DB: odoo_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /DATA/AppData/odoo/postgres:/var/lib/postgresql/data
+    networks:
+      macvlan_net:
+        ipv4_address: 10.41.10.148
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicativo Odoo 17
+  odoo:
+    image: odoo:17.0
+    container_name: odoo-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      HOST: postgres
+      USER: odoo
+      PASSWORD: seu_senha_segura_aqui
+      DB_NAME: odoo_db
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+    volumes:
+      - /DATA/AppData/odoo/addons:/mnt/extra-addons
+      - /DATA/AppData/odoo/config:/etc/odoo
+      - /DATA/AppData/odoo/data:/var/lib/odoo
+    networks:
+      macvlan_net:
+        ipv4_address: 10.41.10.147
+    restart: unless-stopped
+    command: >
+      odoo
+      --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons
+      --db-filter=^odoo_db$
+      --database=odoo_db
+      -c /etc/odoo/odoo.conf
+      --workers=4
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8069/web/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  macvlan_net:
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+      macvlan_mode: bridge
+    ipam:
+      config:
+        - subnet: 10.41.10.0/24
+          gateway: 10.41.10.1
+          ip_range: 10.41.10.128/25
+
+volumes:
+  postgres_data:
+    driver: local
+  odoo_data:
+    driver: local
+
+# ============================================
+# INSTRUÇÕES DE DEPLOY NO PORTAINER:
+# ============================================
+#
+# 1. Acesse: http://10.0.110.132:9001
+#
+# 2. Va para: Environment > Your Environment > Stacks
+#
+# 3. Clique em: "Add Stack"
+#
+# 4. Preencha:
+#    - Stack name: "odoo-brasil" ou "odoo-17"
+#    - Build method: "Editor"
+#    - Marque: "Enable this feature"
+#
+# 5. Cole TODO o arquivo docker-compose.yml na seção "Web editor"
+#
+# 6. Scroll até "Stack file" e certifique-se que tudo está correto
+#
+# 7. Clique em: "Deploy the stack"
+#
+# 8. Aguarde 2-3 minutos pelo build
+#
+# 9. Acessar Odoo:
+#    URL: http://10.41.10.147:8069
+#    User: admin
+#    Pass: admin
+#
+# 10. MUDE A SENHA DO ADMIN IMEDIATAMENTE!
+#
+# ============================================
